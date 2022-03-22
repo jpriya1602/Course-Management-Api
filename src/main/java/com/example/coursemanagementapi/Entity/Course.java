@@ -4,10 +4,13 @@ package com.example.coursemanagementapi.Entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sun.istack.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 
 @Entity
@@ -34,11 +37,28 @@ public class Course {
     @JsonProperty
     @NotNull
     @Column(name = "CREATED_AT")
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
 
     @JsonProperty
-    @NotNull
     @Column(name = "UPDATED_AT")
-    private LocalDate updatedAt;
+    private LocalDateTime updatedAt;
 
+    public Course(String courseName, String description, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.courseName = courseName;
+        this.description = description;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
+    public Course(Long id, String courseName, String description, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
+        this.courseName = courseName;
+        this.description = description;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
+    public Course() {
+
+    }
 }
