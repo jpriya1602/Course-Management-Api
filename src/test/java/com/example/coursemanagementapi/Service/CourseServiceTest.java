@@ -9,7 +9,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,18 +18,18 @@ import static org.mockito.Mockito.*;
 
 public class CourseServiceTest {
 
-   private CourseService courseService;
-   private CourseRepository courseRepository;
+    private CourseService courseService;
+    private CourseRepository courseRepository;
 
-   @BeforeEach
-   void beforeEach(){
-       courseRepository = mock(CourseRepository.class);
-       courseService = new CourseService(courseRepository);
-   }
+    @BeforeEach
+    void beforeEach() {
+        courseRepository = mock(CourseRepository.class);
+        courseService = new CourseService(courseRepository);
+    }
 
     @Test
     void shouldReturnAllCourses() {
-        List<Course> CourseList = asList(mock(Course.class));
+        List<Course> CourseList = asList(mock(Course.class),mock(Course.class));
 
         when(courseRepository.findAll()).thenReturn(CourseList);
         courseService.GetCourses();
@@ -41,7 +40,7 @@ public class CourseServiceTest {
     @Test
     void shouldReturnCourseByGivenId() throws CourseNotFoundException {
         LocalDateTime created_at = LocalDateTime.of(2021, 06, 30, 18, 30, 0);
-        Course course = new Course(1L,"API Development using SpringBoot","course description here",created_at,null);
+        Course course = new Course(1L, "API Development using SpringBoot", "course description here", created_at, null);
 
         when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
         courseService.GetCourseById(1L);
@@ -51,13 +50,12 @@ public class CourseServiceTest {
 
     @Test
     void shouldSaveCourse() throws CourseExistsException {
-        LocalDateTime created_at = LocalDateTime.of(2021, 06, 30, 18, 30, 0);
-        Course course = new Course(1L,"API Development using SpringBoot","course description here",created_at,null);
 
-        CourseDto courseDto = new CourseDto(){};
+        CourseDto courseDto = new CourseDto() {
+        };
         courseDto.setCourseName("API Development using SpringBoot");
         courseDto.setDescripton("course description here");
-        
+
 
         when(courseRepository.findByCourseNameIgnoreCase("API Development using SpringBoot")).thenReturn(Optional.empty());
 
@@ -65,24 +63,36 @@ public class CourseServiceTest {
 
         verify(courseRepository).findByCourseNameIgnoreCase("API Development using SpringBoot");
         verify(courseRepository).save(any(Course.class));
-        
+
     }
 
     @Test
-    void shouldUpdateCourse() throws CourseExistsException, CourseNotFoundException {
-
-       LocalDateTime created_at = LocalDateTime.of(2021, 06, 30, 18, 30, 0);
-        Course course = new Course(1L,"API Development using SpringBoot","course description here",created_at,null);
-        CourseDto courseDto = new CourseDto(){};
+    void shouldUpdateCourse() throws CourseNotFoundException {
+        LocalDateTime created_at = LocalDateTime.of(2021, 06, 30, 18, 30, 0);
+        Course course = new Course(1L, "API Development using SpringBoot", "course description here", created_at, null);
+        CourseDto courseDto = new CourseDto() {
+        };
         courseDto.setCourseName("API Development using SpringBoot");
         courseDto.setDescripton("course description here");
-        Long requestedId = 1L;
 
-        when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
+        Long id = 1L;
+
+        when(courseRepository.findById(id)).thenReturn(Optional.of(course));
         when(courseRepository.findByCourseNameIgnoreCase("API Development using SpringBoot")).thenReturn(Optional.empty());
 
-        courseService.UpdateCourse(1L,courseDto);
+        courseService.UpdateCourse(id, courseDto);
 
         verify(courseRepository).save(any(Course.class));
-   }
+    }
+
+    @Test
+    void shouldDeleteCourse() throws CourseNotFoundException {
+        Course course = new Course();
+        when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
+
+        courseService.DeleteById(1L);
+
+        verify(courseRepository, times(1)).deleteById(1L);
+
+    }
 }

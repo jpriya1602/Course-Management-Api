@@ -1,7 +1,6 @@
 package com.example.coursemanagementapi.Controller;
 
 import com.example.coursemanagementapi.CourseDto;
-import com.example.coursemanagementapi.CourseExistsException;
 import com.example.coursemanagementapi.CourseManagementApiApplication;
 import com.example.coursemanagementapi.CourseNotFoundException;
 import com.example.coursemanagementapi.Entity.Course;
@@ -20,13 +19,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.util.Arrays.asList;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -72,7 +69,7 @@ public class CourseControllerTest {
         when(courseService.SaveCourse(courseDto)).thenReturn(course);
         mockMvc.perform(post("/api/courses")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(String.valueOf(courseRequestDto)))
+                        .content(courseRequestDto))
                 .andExpect(status().isCreated());
                 //.andExpect(content().json(expectedJson(course)));      // how to check the time created and the mocked value.
 
@@ -86,18 +83,25 @@ public class CourseControllerTest {
         courseDto.setDescripton("Added course description here");
 
         String courseRequestDto = "{ \"courseName\":\"API Development using SpringBoot\",\"Description\": \"course description here\"}";
-        Long Id = 1L;
+        Long id = 1L;
 
         LocalDateTime created_at = LocalDateTime.of(2021, 06, 30, 18, 30, 0);
-        Course course = new Course(1L, "API Development using SpringBoot", "course description here", created_at, null);
+        Course course = new Course(id, "API Development using SpringBoot", "course description here", created_at, null);
 
-        when(courseService.UpdateCourse(1L,courseDto)).thenReturn(course);
+        when(courseService.UpdateCourse(id,courseDto)).thenReturn(course);
         mockMvc.perform(put("/api/courses/1")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(String.valueOf(courseRequestDto)))
-                .andExpect(status().isCreated());
+                        .content(courseRequestDto))
+                        .andExpect(status().isCreated());
 
 
+    }
+
+    @Test
+    void shouldBeAbleToDeleteByCourseId() throws Exception, CourseNotFoundException {
+        mockMvc.perform(delete("/api/courses/" + 1));
+
+        verify(courseService, times(1)).DeleteById(1L);
     }
 
     private String expectedJson(List<Course> courses) throws JsonProcessingException {

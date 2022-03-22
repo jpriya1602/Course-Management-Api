@@ -54,14 +54,17 @@ public class CourseService {
         return courseRepository.save(course);
     }
 
-
-
-    private boolean CheckCourseAlreadyExists(String courseName) throws CourseExistsException {
-        Optional<Course> course = courseRepository.findByCourseNameIgnoreCase(courseName);
-        if (!course.isEmpty()) {
-            return true;
+    public void DeleteById(Long Id) throws CourseNotFoundException {
+        Optional<Course> course = courseRepository.findById(Id);
+        if (course.isEmpty()) {
+            throw new CourseNotFoundException("course with " + Id + "not found");
         }
-        return false;
+        courseRepository.deleteById(Id);
+   }
+
+    private boolean CheckCourseAlreadyExists(String courseName){
+        Optional<Course> course = courseRepository.findByCourseNameIgnoreCase(courseName);
+        return !course.isEmpty();
     }
 
 
