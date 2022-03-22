@@ -1,5 +1,7 @@
 package com.example.coursemanagementapi.Controller;
 
+import com.example.coursemanagementapi.CourseDto;
+import com.example.coursemanagementapi.CourseExistsException;
 import com.example.coursemanagementapi.CourseManagementApiApplication;
 import com.example.coursemanagementapi.Entity.Course;
 import com.example.coursemanagementapi.Service.CourseService;
@@ -14,6 +16,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
@@ -24,6 +27,7 @@ import java.util.List;
 import static java.util.Arrays.asList;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -39,17 +43,39 @@ public class CourseControllerTest {
     private CourseService courseService;
 
     @Test
-
-    void shouldReturnListOfCourses() throws Exception{
+    void shouldReturnListOfCourses() throws Exception {
         LocalDateTime created_at = LocalDateTime.of(2021, 06, 30, 18, 30, 0);
-        Course course = new Course(1L,"API Development using SpringBoot","course description here",created_at,null);
+        Course course = new Course(1L, "API Development using SpringBoot", "course description here", created_at, null);
         List<Course> courses = new ArrayList<>();
         courses.add(course);
+
         when(courseService.GetCourses()).thenReturn(courses);
+
         mockMvc.perform(
                         get("/api/courses"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson(courses)));
+    }
+
+    @Test
+    void shouldSaveCourse() throws Exception {
+        CourseDto courseDto = new CourseDto() {
+        };
+        courseDto.setCourseName("API Development using SpringBoot");
+        courseDto.setDescripton("course description here");
+
+        String courseRequestDto = "{ \"courseName\":\"API Development using SpringBoot\",\"Description\": \"course description here\"}";
+
+        LocalDateTime created_at = LocalDateTime.of(2021, 06, 30, 18, 30, 0);
+        Course course = new Course(1L, "API Development using SpringBoot", "course description here", created_at, null);
+
+        when(courseService.SaveCourse(courseDto)).thenReturn(course);
+        mockMvc.perform(post("/api/courses")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(String.valueOf(courseRequestDto)))
+                .andExpect(status().isCreated());
+        //.andExpect(content().json(expectedJson(course)));      // how to check the time created and the mocked value.
+        // .andExpect(content().json(course));
     }
 
     private String expectedJson(List<Course> courses) throws JsonProcessingException {
@@ -57,5 +83,12 @@ public class CourseControllerTest {
         jsonMapper.registerModule(new JavaTimeModule());
         jsonMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         return jsonMapper.writeValueAsString(courses);
+    }
+
+    private String expectedJson(Course course) throws JsonProcessingException {
+        ObjectMapper writer = new ObjectMapper();
+        writer.registerModule(new JavaTimeModule());
+        writer.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        return writer.writeValueAsString(course);
     }
 }
