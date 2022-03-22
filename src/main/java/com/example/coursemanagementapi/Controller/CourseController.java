@@ -42,17 +42,29 @@ public class CourseController {
     }
 
     @PostMapping
-    public ResponseEntity<Course> saveCourse(@RequestBody CourseDto courseDto) {
+    public ResponseEntity<Object> saveCourse(@RequestBody CourseDto courseDto) {
         if (courseDto.getCourseName().isEmpty() || courseDto.getCourseName() == null)
-            return status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\":\"Course title is required\"}");
         try {
             Course course = courseService.SaveCourse(courseDto);
             return status(HttpStatus.CREATED).body(course);
         } catch (Exception e) {
-            return status(HttpStatus.BAD_REQUEST).build();
-
+            return status(HttpStatus.BAD_REQUEST).body("{\"error\": \""+e.getMessage() +"\"}");
         }
     }
 
+    @PutMapping("/{Id}")
+    public ResponseEntity<Object> updateCourse(@PathVariable Long Id,@RequestBody CourseDto courseDto) throws CourseNotFoundException {
+        if (courseDto.getCourseName().isEmpty() || courseDto.getCourseName() == null)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\":\"Course title is required\"}");
+        try {
+            Course course = courseService.UpdateCourse(Id,courseDto);
+            return status(HttpStatus.CREATED).body(course);
+        } catch (Exception e) {
+            return status(HttpStatus.BAD_REQUEST).body("{\"error\": \""+e.getMessage() +"\"}");
+        }
+    }
+
+    //@DeleteMapping("{/Id})
 
 }

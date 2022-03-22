@@ -31,21 +31,39 @@ public class CourseService {
         if (course.isEmpty()) {
             throw new CourseNotFoundException("course with " + id + "not found");
         }
-        ;
         return course.get();
     }
 
     public Course SaveCourse(CourseDto courseDto) throws CourseExistsException {
-        Optional<Course> course = courseRepository.findByCourseNameIgnoreCase(courseDto.getCourseName());
-        if (!course.isEmpty()) {
-            throw new CourseExistsException("course with " + courseDto.getCourseName() + "already exists");
+
+        if (CheckCourseAlreadyExists(courseDto.getCourseName())) {
+            throw new CourseExistsException("course with " + courseDto.getCourseName() + " already exists");
         }
 
-        System.out.println("course name--->" + courseDto.getCourseName());
-        Course newCourse = new Course(courseDto.getCourseName(), courseDto.getDescripton(), LocalDateTime.now(), null);
+        Course newCourse = new Course(courseDto.getCourseName(), courseDto.getDescription(), LocalDateTime.now(), null);
         return courseRepository.save(newCourse);
-
     }
+
+    public Course UpdateCourse(long id,CourseDto courseDto) throws CourseNotFoundException{
+
+        Course course = GetCourseById(id);
+        course.setCourseName(courseDto.getCourseName());
+        course.setDescription(courseDto.getDescription());
+        course.setUpdatedAt(LocalDateTime.now());
+
+        return courseRepository.save(course);
+    }
+
+
+
+    private boolean CheckCourseAlreadyExists(String courseName) throws CourseExistsException {
+        Optional<Course> course = courseRepository.findByCourseNameIgnoreCase(courseName);
+        if (!course.isEmpty()) {
+            return true;
+        }
+        return false;
+    }
+
 
 
 }

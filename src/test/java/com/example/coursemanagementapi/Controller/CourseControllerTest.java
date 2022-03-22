@@ -3,6 +3,7 @@ package com.example.coursemanagementapi.Controller;
 import com.example.coursemanagementapi.CourseDto;
 import com.example.coursemanagementapi.CourseExistsException;
 import com.example.coursemanagementapi.CourseManagementApiApplication;
+import com.example.coursemanagementapi.CourseNotFoundException;
 import com.example.coursemanagementapi.Entity.Course;
 import com.example.coursemanagementapi.Service.CourseService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -26,8 +27,7 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -74,8 +74,30 @@ public class CourseControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(String.valueOf(courseRequestDto)))
                 .andExpect(status().isCreated());
-        //.andExpect(content().json(expectedJson(course)));      // how to check the time created and the mocked value.
-        // .andExpect(content().json(course));
+                //.andExpect(content().json(expectedJson(course)));      // how to check the time created and the mocked value.
+
+    }
+
+    @Test
+    void shouldUpdateCourse() throws CourseNotFoundException, Exception {
+        CourseDto courseDto = new CourseDto() {
+        };
+        courseDto.setCourseName("API Development using SpringBoot");
+        courseDto.setDescripton("Added course description here");
+
+        String courseRequestDto = "{ \"courseName\":\"API Development using SpringBoot\",\"Description\": \"course description here\"}";
+        Long Id = 1L;
+
+        LocalDateTime created_at = LocalDateTime.of(2021, 06, 30, 18, 30, 0);
+        Course course = new Course(1L, "API Development using SpringBoot", "course description here", created_at, null);
+
+        when(courseService.UpdateCourse(1L,courseDto)).thenReturn(course);
+        mockMvc.perform(put("/api/courses/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(String.valueOf(courseRequestDto)))
+                .andExpect(status().isCreated());
+
+
     }
 
     private String expectedJson(List<Course> courses) throws JsonProcessingException {

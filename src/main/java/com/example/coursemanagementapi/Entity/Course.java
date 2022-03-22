@@ -5,7 +5,9 @@ package com.example.coursemanagementapi.Entity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 
 import javax.persistence.*;
@@ -38,6 +40,20 @@ public class Course {
     @NotNull
     @Column(name = "CREATED_AT")
     private LocalDateTime createdAt;
+
+
+
+    public void setCourseName(String courseName) {
+        this.courseName = courseName;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     @JsonProperty
     @Column(name = "UPDATED_AT")

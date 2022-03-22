@@ -1,5 +1,7 @@
 package com.example.coursemanagementapi;
 
+import java.time.LocalDateTime;
+
 public class CourseDto {
 
     public String getCourseName() {
@@ -14,7 +16,7 @@ public class CourseDto {
         Description = description;
     }
 
-    public String getDescripton() {
+    public String getDescription() {
         return Description;
     }
 

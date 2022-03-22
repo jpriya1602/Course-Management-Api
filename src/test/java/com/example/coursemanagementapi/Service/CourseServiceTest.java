@@ -57,13 +57,32 @@ public class CourseServiceTest {
         CourseDto courseDto = new CourseDto(){};
         courseDto.setCourseName("API Development using SpringBoot");
         courseDto.setDescripton("course description here");
+        
 
         when(courseRepository.findByCourseNameIgnoreCase("API Development using SpringBoot")).thenReturn(Optional.empty());
-        when(courseRepository.save(course)).thenReturn(course);
 
         courseService.SaveCourse(courseDto);
 
         verify(courseRepository).findByCourseNameIgnoreCase("API Development using SpringBoot");
-        // donot know how to check the save call ( differrent object)
+        verify(courseRepository).save(any(Course.class));
+        
     }
+
+    @Test
+    void shouldUpdateCourse() throws CourseExistsException, CourseNotFoundException {
+
+       LocalDateTime created_at = LocalDateTime.of(2021, 06, 30, 18, 30, 0);
+        Course course = new Course(1L,"API Development using SpringBoot","course description here",created_at,null);
+        CourseDto courseDto = new CourseDto(){};
+        courseDto.setCourseName("API Development using SpringBoot");
+        courseDto.setDescripton("course description here");
+        Long requestedId = 1L;
+
+        when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
+        when(courseRepository.findByCourseNameIgnoreCase("API Development using SpringBoot")).thenReturn(Optional.empty());
+
+        courseService.UpdateCourse(1L,courseDto);
+
+        verify(courseRepository).save(any(Course.class));
+   }
 }
