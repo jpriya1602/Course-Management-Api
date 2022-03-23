@@ -63,20 +63,19 @@ public class CourseControllerTest {
 
         String courseRequestDto = "{ \"courseName\":\"API Development using SpringBoot\",\"Description\": \"course description here\"}";
 
-        LocalDateTime created_at = LocalDateTime.of(2021, 06, 30, 18, 30, 0);
+        LocalDateTime created_at = LocalDateTime.of(2022, 03, 23, 07, 43, 57,243345);
         Course course = new Course(1L, "API Development using SpringBoot", "course description here", created_at, null);
 
         when(courseService.SaveCourse(courseDto)).thenReturn(course);
         mockMvc.perform(post("/api/courses")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(courseRequestDto))
-                .andExpect(status().isCreated());
-                //.andExpect(content().json(expectedJson(course)));      // how to check the time created and the mocked value.
+                        .andExpect(status().isCreated());
 
     }
 
     @Test
-    void shouldUpdateCourse() throws CourseNotFoundException, Exception {
+    void shouldUpdateCourse() throws Exception {
         CourseDto courseDto = new CourseDto() {
         };
         courseDto.setCourseName("API Development using SpringBoot");
@@ -98,10 +97,29 @@ public class CourseControllerTest {
     }
 
     @Test
-    void shouldBeAbleToDeleteByCourseId() throws Exception, CourseNotFoundException {
+    void shouldThrowErrorWhenCourseIdIsNotFoundForUpdate() throws Exception {
+
+        String courseRequestDto = "{\"Description\": \"course description here\"}";
+
+        mockMvc.perform(put("/api/courses/1L")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(courseRequestDto))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldBeAbleToDeleteByCourseId() throws Exception {
         mockMvc.perform(delete("/api/courses/" + 1));
 
         verify(courseService, times(1)).DeleteById(1L);
+    }
+
+    @Test
+    void shouldThrowErrorWhenIdIsNotFoundToDelete() throws Exception {
+        doThrow(new CourseNotFoundException("course with Id = 3 not found")).when(courseService).DeleteById(3L);
+        mockMvc.perform(delete("/api/courses/3"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().json("{\"error\":\"course with Id = 3 not found\"}"));
     }
 
     private String expectedJson(List<Course> courses) throws JsonProcessingException {
@@ -110,7 +128,6 @@ public class CourseControllerTest {
         jsonMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         return jsonMapper.writeValueAsString(courses);
     }
-
     private String expectedJson(Course course) throws JsonProcessingException {
         ObjectMapper writer = new ObjectMapper();
         writer.registerModule(new JavaTimeModule());
