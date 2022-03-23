@@ -29,7 +29,7 @@ public class CourseServiceTest {
 
     @Test
     void shouldReturnAllCourses() {
-        List<Course> CourseList = asList(mock(Course.class),mock(Course.class));
+        List<Course> CourseList = asList(mock(Course.class), mock(Course.class));
 
         when(courseRepository.findAll()).thenReturn(CourseList);
         courseService.GetCourses();
@@ -95,4 +95,6 @@ public class CourseServiceTest {
         verify(courseRepository, times(1)).deleteById(1L);
 
     }
+
+
 }

@@ -30,10 +30,10 @@ public class CourseController {
         return courseService.GetCourses();
     }
 
-    @GetMapping("/{Id}")
-    public ResponseEntity<Object> GetCourseById(@PathVariable Long Id) {
+    @GetMapping("/{id}")
+    public ResponseEntity<Object> GetCourseById(@PathVariable Long id) {
         try {
-            Course course = courseService.GetCourseById(Id);
+            Course course = courseService.GetCourseById(id);
             return ok().body(course);
         } catch (CourseNotFoundException e) {
             return status(HttpStatus.BAD_REQUEST).body("{\"error\": \"" + e.getMessage() + "\"}");
@@ -53,21 +53,27 @@ public class CourseController {
         }
     }
 
-    @PutMapping("/{Id}")
-    public ResponseEntity<Object> updateCourse(@PathVariable Long Id, @RequestBody CourseDto courseDto) throws CourseNotFoundException {
+    @PutMapping("/{id}")
+    public ResponseEntity<Object> updateCourse(@PathVariable Long id, @RequestBody CourseDto courseDto) {
         if (courseDto.getCourseName().isEmpty() || courseDto.getCourseName() == null)
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\":\"Course title is required\"}");
         try {
-            Course course = courseService.UpdateCourse(Id, courseDto);
+            Course course = courseService.UpdateCourse(id, courseDto);
             return status(HttpStatus.CREATED).body(course);
         } catch (Exception e) {
-            return status(HttpStatus.BAD_REQUEST).body("{\"error\": \"" + e.getMessage() + "\"}");
+            return status(HttpStatus.NOT_FOUND).body("{\"error\": \"" + e.getMessage() + "\"}");
         }
     }
 
-    @DeleteMapping("/{Id}")
-    public void deleteCourse(@PathVariable Long Id) throws CourseNotFoundException {
-        courseService.DeleteById(Id);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Object> deleteCourse(@PathVariable Long id) {
+        try {
+            courseService.DeleteById(id);
+            return status(HttpStatus.OK).build();
+        }
+        catch (Exception e){
+            return status(HttpStatus.NOT_FOUND).body("{\"error\": \"" + e.getMessage() + "\"}");
+        }
     }
 
 }
