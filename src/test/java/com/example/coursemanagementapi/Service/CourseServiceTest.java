@@ -5,6 +5,7 @@ import com.example.coursemanagementapi.CourseExistsException;
 import com.example.coursemanagementapi.CourseNotFoundException;
 import com.example.coursemanagementapi.Entity.Course;
 import com.example.coursemanagementapi.Repository.CourseRepository;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -49,6 +50,13 @@ public class CourseServiceTest {
     }
 
     @Test
+    void shouldThrowExceptionGetCourseIdIsNotFound() {
+        when(courseRepository.findById(1L)).thenReturn(Optional.empty());
+
+        Assertions.assertThrows(CourseNotFoundException.class, () -> courseService.DeleteById(1L));
+    }
+
+    @Test
     void shouldSaveCourse() throws CourseExistsException {
 
         CourseDto courseDto = new CourseDto() {
@@ -64,6 +72,19 @@ public class CourseServiceTest {
         verify(courseRepository).findByCourseNameIgnoreCase("API Development using SpringBoot");
         verify(courseRepository).save(any(Course.class));
 
+    }
+
+    @Test
+    void shouldThrowExceptionWhenCourseTitleIsAlreadyPresent() {
+        CourseDto courseDto = new CourseDto() {
+        };
+        courseDto.setCourseName("Test course");
+        courseDto.setDescripton("Test description here");
+
+
+        when(courseRepository.findByCourseNameIgnoreCase("Test course")).thenReturn(Optional.of(new Course()));
+
+        Assertions.assertThrows(CourseExistsException.class, () -> courseService.SaveCourse(courseDto));
     }
 
     @Test
@@ -86,6 +107,13 @@ public class CourseServiceTest {
     }
 
     @Test
+    void shouldThrowExceptionWhenUpdateCourseIsCalledWithInvalidId() {
+        when(courseRepository.findById(1L)).thenReturn(Optional.empty());
+
+        Assertions.assertThrows(CourseNotFoundException.class, () -> courseService.DeleteById(1L));
+    }
+
+    @Test
     void shouldDeleteCourse() throws CourseNotFoundException {
         Course course = new Course();
         when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
@@ -96,5 +124,12 @@ public class CourseServiceTest {
 
     }
 
+    @Test
+    void shouldThrowExceptionWhenDeleteIsInvokedWithInvalidId() {
+        when(courseRepository.findById(1L)).thenReturn(Optional.empty());
+
+        Assertions.assertThrows(CourseNotFoundException.class, () -> courseService.DeleteById(1L));
+
+    }
 
 }

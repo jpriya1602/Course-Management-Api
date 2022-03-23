@@ -64,7 +64,7 @@ public class CourseService {
 
     private boolean CheckCourseAlreadyExists(String courseName){
         Optional<Course> course = courseRepository.findByCourseNameIgnoreCase(courseName);
-        return !course.isEmpty();
+        return course.isPresent();
     }
 
 
