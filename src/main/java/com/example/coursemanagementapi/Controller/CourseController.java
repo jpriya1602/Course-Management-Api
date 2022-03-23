@@ -26,14 +26,14 @@ public class CourseController {
     }
 
     @GetMapping
-    public List<Course> GetAllCourse() {
-        return courseService.GetCourses();
+    public List<Course> getAllCourse() {
+        return courseService.getCourses();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> GetCourseById(@PathVariable Long id) {
+    public ResponseEntity<Object> getCourseById(@PathVariable Long id) {
         try {
-            Course course = courseService.GetCourseById(id);
+            Course course = courseService.getCourseById(id);
             return ok().body(course);
         } catch (CourseNotFoundException e) {
             return status(HttpStatus.BAD_REQUEST).body("{\"error\": \"" + e.getMessage() + "\"}");
@@ -46,7 +46,7 @@ public class CourseController {
         if (courseDto.getCourseName().isEmpty() || courseDto.getCourseName() == null)
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\":\"Course title is required\"}");
         try {
-            Course course = courseService.SaveCourse(courseDto);
+            Course course = courseService.saveCourse(courseDto);
             return status(HttpStatus.CREATED).body(course);
         } catch (Exception e) {
             return status(HttpStatus.BAD_REQUEST).body("{\"error\": \"" + e.getMessage() + "\"}");
@@ -58,7 +58,7 @@ public class CourseController {
         if (courseDto.getCourseName().isEmpty() || courseDto.getCourseName() == null)
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\":\"Course title is required\"}");
         try {
-            Course course = courseService.UpdateCourse(id, courseDto);
+            Course course = courseService.updateCourse(id, courseDto);
             return status(HttpStatus.CREATED).body(course);
         } catch (Exception e) {
             return status(HttpStatus.NOT_FOUND).body("{\"error\": \"" + e.getMessage() + "\"}");
@@ -68,7 +68,7 @@ public class CourseController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteCourse(@PathVariable Long id) {
         try {
-            courseService.DeleteById(id);
+            courseService.deleteById(id);
             return status(HttpStatus.OK).build();
         }
         catch (Exception e){

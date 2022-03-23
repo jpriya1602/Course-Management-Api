@@ -46,7 +46,7 @@ public class CourseControllerTest {
         List<Course> courses = new ArrayList<>();
         courses.add(course);
 
-        when(courseService.GetCourses()).thenReturn(courses);
+        when(courseService.getCourses()).thenReturn(courses);
 
         mockMvc.perform(
                         get("/api/courses"))
@@ -66,7 +66,7 @@ public class CourseControllerTest {
         LocalDateTime created_at = LocalDateTime.of(2022, 03, 23, 07, 43, 57,243345);
         Course course = new Course(1L, "API Development using SpringBoot", "course description here", created_at, null);
 
-        when(courseService.SaveCourse(courseDto)).thenReturn(course);
+        when(courseService.saveCourse(courseDto)).thenReturn(course);
         mockMvc.perform(post("/api/courses")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(courseRequestDto))
@@ -87,7 +87,7 @@ public class CourseControllerTest {
         LocalDateTime created_at = LocalDateTime.of(2021, 06, 30, 18, 30, 0);
         Course course = new Course(id, "API Development using SpringBoot", "course description here", created_at, null);
 
-        when(courseService.UpdateCourse(id,courseDto)).thenReturn(course);
+        when(courseService.updateCourse(id,courseDto)).thenReturn(course);
         mockMvc.perform(put("/api/courses/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(courseRequestDto))
@@ -111,12 +111,12 @@ public class CourseControllerTest {
     void shouldBeAbleToDeleteByCourseId() throws Exception {
         mockMvc.perform(delete("/api/courses/" + 1));
 
-        verify(courseService, times(1)).DeleteById(1L);
+        verify(courseService, times(1)).deleteById(1L);
     }
 
     @Test
     void shouldThrowErrorWhenIdIsNotFoundToDelete() throws Exception {
-        doThrow(new CourseNotFoundException("course with Id = 3 not found")).when(courseService).DeleteById(3L);
+        doThrow(new CourseNotFoundException("course with Id = 3 not found")).when(courseService).deleteById(3L);
         mockMvc.perform(delete("/api/courses/3"))
                 .andExpect(status().isNotFound())
                 .andExpect(content().json("{\"error\":\"course with Id = 3 not found\"}"));

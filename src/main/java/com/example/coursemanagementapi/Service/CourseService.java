@@ -22,11 +22,11 @@ public class CourseService {
         this.courseRepository = courseRepository;
     }
 
-    public List<Course> GetCourses() {
+    public List<Course> getCourses() {
         return courseRepository.findAll();
     }
 
-    public Course GetCourseById(Long id) throws CourseNotFoundException {
+    public Course getCourseById(Long id) throws CourseNotFoundException {
         Optional<Course> course = courseRepository.findById(id);
         if (course.isEmpty()) {
             throw new CourseNotFoundException("course with Id = " + id + " not found");
@@ -34,9 +34,9 @@ public class CourseService {
         return course.get();
     }
 
-    public Course SaveCourse(CourseDto courseDto) throws CourseExistsException {
+    public Course saveCourse(CourseDto courseDto) throws CourseExistsException {
 
-        if (CheckCourseAlreadyExists(courseDto.getCourseName())) {
+        if (checkCourseAlreadyExists(courseDto.getCourseName())) {
             throw new CourseExistsException("course with tile " + courseDto.getCourseName() + " already exists");
         }
 
@@ -44,9 +44,9 @@ public class CourseService {
         return courseRepository.save(newCourse);
     }
 
-    public Course UpdateCourse(long id,CourseDto courseDto) throws CourseNotFoundException{
+    public Course updateCourse(long id, CourseDto courseDto) throws CourseNotFoundException{
 
-        Course course = GetCourseById(id);
+        Course course = getCourseById(id);
         course.setCourseName(courseDto.getCourseName());
         course.setDescription(courseDto.getDescription());
         course.setUpdatedAt(LocalDateTime.now());
@@ -54,7 +54,7 @@ public class CourseService {
         return courseRepository.save(course);
     }
 
-    public void DeleteById(Long id) throws CourseNotFoundException {
+    public void deleteById(Long id) throws CourseNotFoundException {
         Optional<Course> course = courseRepository.findById(id);
         if (course.isEmpty()) {
             throw new CourseNotFoundException("course with " + id + " not found");
@@ -62,7 +62,7 @@ public class CourseService {
         courseRepository.deleteById(id);
     }
 
-    private boolean CheckCourseAlreadyExists(String courseName){
+    private boolean checkCourseAlreadyExists(String courseName){
         Optional<Course> course = courseRepository.findByCourseNameIgnoreCase(courseName);
         return course.isPresent();
     }

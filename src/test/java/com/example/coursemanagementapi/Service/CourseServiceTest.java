@@ -33,7 +33,7 @@ public class CourseServiceTest {
         List<Course> CourseList = asList(mock(Course.class), mock(Course.class));
 
         when(courseRepository.findAll()).thenReturn(CourseList);
-        courseService.GetCourses();
+        courseService.getCourses();
 
         verify(courseRepository).findAll();
     }
@@ -44,7 +44,7 @@ public class CourseServiceTest {
         Course course = new Course(1L, "API Development using SpringBoot", "course description here", created_at, null);
 
         when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
-        courseService.GetCourseById(1L);
+        courseService.getCourseById(1L);
 
         verify(courseRepository).findById(1L);
     }
@@ -53,7 +53,7 @@ public class CourseServiceTest {
     void shouldThrowExceptionGetCourseIdIsNotFound() {
         when(courseRepository.findById(1L)).thenReturn(Optional.empty());
 
-        Assertions.assertThrows(CourseNotFoundException.class, () -> courseService.DeleteById(1L));
+        Assertions.assertThrows(CourseNotFoundException.class, () -> courseService.deleteById(1L));
     }
 
     @Test
@@ -67,7 +67,7 @@ public class CourseServiceTest {
 
         when(courseRepository.findByCourseNameIgnoreCase("API Development using SpringBoot")).thenReturn(Optional.empty());
 
-        courseService.SaveCourse(courseDto);
+        courseService.saveCourse(courseDto);
 
         verify(courseRepository).findByCourseNameIgnoreCase("API Development using SpringBoot");
         verify(courseRepository).save(any(Course.class));
@@ -84,7 +84,7 @@ public class CourseServiceTest {
 
         when(courseRepository.findByCourseNameIgnoreCase("Test course")).thenReturn(Optional.of(new Course()));
 
-        Assertions.assertThrows(CourseExistsException.class, () -> courseService.SaveCourse(courseDto));
+        Assertions.assertThrows(CourseExistsException.class, () -> courseService.saveCourse(courseDto));
     }
 
     @Test
@@ -101,7 +101,7 @@ public class CourseServiceTest {
         when(courseRepository.findById(id)).thenReturn(Optional.of(course));
         when(courseRepository.findByCourseNameIgnoreCase("API Development using SpringBoot")).thenReturn(Optional.empty());
 
-        courseService.UpdateCourse(id, courseDto);
+        courseService.updateCourse(id, courseDto);
 
         verify(courseRepository).save(any(Course.class));
     }
@@ -110,7 +110,7 @@ public class CourseServiceTest {
     void shouldThrowExceptionWhenUpdateCourseIsCalledWithInvalidId() {
         when(courseRepository.findById(1L)).thenReturn(Optional.empty());
 
-        Assertions.assertThrows(CourseNotFoundException.class, () -> courseService.DeleteById(1L));
+        Assertions.assertThrows(CourseNotFoundException.class, () -> courseService.deleteById(1L));
     }
 
     @Test
@@ -118,7 +118,7 @@ public class CourseServiceTest {
         Course course = new Course();
         when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
 
-        courseService.DeleteById(1L);
+        courseService.deleteById(1L);
 
         verify(courseRepository, times(1)).deleteById(1L);
 
@@ -128,7 +128,7 @@ public class CourseServiceTest {
     void shouldThrowExceptionWhenDeleteIsInvokedWithInvalidId() {
         when(courseRepository.findById(1L)).thenReturn(Optional.empty());
 
-        Assertions.assertThrows(CourseNotFoundException.class, () -> courseService.DeleteById(1L));
+        Assertions.assertThrows(CourseNotFoundException.class, () -> courseService.deleteById(1L));
 
     }
 
