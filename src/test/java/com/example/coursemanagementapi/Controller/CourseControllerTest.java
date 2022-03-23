@@ -55,6 +55,19 @@ public class CourseControllerTest {
     }
 
     @Test
+    void shouldAbleReturnCourseForGivenId() throws Exception {
+        LocalDateTime created_at = LocalDateTime.of(2021, 06, 30, 18, 30, 0);
+        Course course = new Course(1L, "API Development using SpringBoot", "course description here", created_at, null);
+
+
+        when(courseService.getCourseById(1L)).thenReturn(course);
+
+        mockMvc.perform(
+                        get("/api/courses/1"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(expectedJson(course)));
+    }
+    @Test
     void shouldSaveCourse() throws Exception {
         CourseDto courseDto = new CourseDto() {
         };
@@ -72,6 +85,17 @@ public class CourseControllerTest {
                         .content(courseRequestDto))
                         .andExpect(status().isCreated());
 
+    }
+    @Test
+    void shouldThrowErrorWhenCourseIdIsNotFoundForPost() throws Exception {
+
+        String courseRequestDto = "{\"Description\": \"course description here\"}";
+
+        mockMvc.perform(post("/api/courses")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(courseRequestDto))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().json("{\"error\":\"Course title is required\"}"));
     }
 
     @Test

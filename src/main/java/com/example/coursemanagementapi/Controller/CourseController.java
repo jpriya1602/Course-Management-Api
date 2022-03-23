@@ -43,7 +43,9 @@ public class CourseController {
 
     @PostMapping
     public ResponseEntity<Object> saveCourse(@RequestBody CourseDto courseDto) {
-        if (courseDto.getCourseName().isEmpty() || courseDto.getCourseName() == null)
+        if (courseDto.getCourseName() == null || courseDto.getDescription() == null)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\":\"Course title is required\"}");
+        if(courseDto.getCourseName().isEmpty())
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\":\"Course title is required\"}");
         try {
             Course course = courseService.saveCourse(courseDto);
@@ -55,7 +57,10 @@ public class CourseController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Object> updateCourse(@PathVariable Long id, @RequestBody CourseDto courseDto) {
-        if (courseDto.getCourseName().isEmpty() || courseDto.getCourseName() == null)
+
+        if (courseDto.getCourseName() == null)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\":\"Course title is required\"}");
+        if (courseDto.getCourseName().isEmpty())
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\":\"Course title is required\"}");
         try {
             Course course = courseService.updateCourse(id, courseDto);
