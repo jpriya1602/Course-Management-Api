@@ -81,4 +81,9 @@ public class CourseController {
         }
     }
 
+    @GetMapping("/health")
+    public String health() {
+        return "working fine !!!";
+    }
+
 }
